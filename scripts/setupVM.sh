@@ -13,7 +13,7 @@ if lsblk | grep sda ; then
 	udevadm settle
 
 	mkfs.vfat -F 32 /dev/sda1
-	mkfs.ext4 -f /dev/sda2
+	mkfs.ext4 -F /dev/sda2
 	udevadm settle
 
 	mount /dev/sda2 /mnt
