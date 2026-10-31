@@ -127,7 +127,7 @@ environment.sessionVariables = {
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
   services.cassandra.enable = true;
-  services.cassandra.enable = pkgs.cassandra_4;
+  services.cassandra.package = pkgs.cassandra_4;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
