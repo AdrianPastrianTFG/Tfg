@@ -10,15 +10,18 @@ fi
 
 if lsblk | grep sda ; then
 	sfdisk --force /dev/sda < partitions_cp.disk
+	udevadm settle
+
 	mkfs.vfat -F 32 /dev/sda1
 	mkfs.ext4 -f /dev/sda2
-
 	udevadm settle
 
 	mount /dev/sda2 /mnt
+	udevadm settle
 
 	mkdir -p /mnt/boot
 	mount /dev/sda1 /mnt/boot
+	udevadm settle
 
 	service="$1"
 
@@ -30,8 +33,9 @@ if lsblk | grep sda ; then
 
 	mkdir -p /mnt/etc/nixos
 
+	nixos-generate-config --root /mnt
+
 	if cp "/tmp/my-repo/VMsConf/$service/configuration.nix" /mnt/etc/nixos/ ; then
-		nixos-generate-config --root /mnt
 		nixos-install --no-root-passwd
 		rm -rf /tmp/my-repo
 	else
