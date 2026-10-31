@@ -85,6 +85,7 @@
     isNormalUser = true;
     description = "Adrian Pastrian Ramiro";
     extraGroups = [ "networkmanager" "wheel" ];
+    initialPassword = "changeme";
     packages = with pkgs; [
 	wget
 	cassandra
