@@ -11,9 +11,11 @@
     ];
 
   # Use the GRUB 2 boot loader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
+#  boot.loader.grub.enable = true;
+#  boot.loader.grub.device = "/dev/sda";
+#  boot.loader.grub.useOSProber = true;
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchVariables = true;
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -24,6 +26,10 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+
+  systemd.tmpfiles.rules = [
+	"d /var/log/cassandra 0755 root root -"
+  ];
 
   # Set your time zone.
   time.timeZone = "Europe/Madrid";
@@ -88,7 +94,7 @@
   };
 
   # Install firefox.
-  programs.firefox.enable = true;
+#  programs.firefox.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -121,6 +127,7 @@ environment.sessionVariables = {
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
   services.cassandra.enable = true;
+  services.cassandra.enable = pkgs.cassandra_4;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
