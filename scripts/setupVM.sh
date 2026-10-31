@@ -2,7 +2,7 @@
 
 #Configuration script for the installation of NixOS with an specific service
 
-if [ "$#" -ne 1 ]; then 
+if [ "$#" -ne 1 ]; then
 	echo "ERROR: Script accepts only one parameter." >&2
 	echo "Correct usage: $0 [ Service ]"
 	exit 1
@@ -12,6 +12,8 @@ if lsblk | grep sda ; then
 	sfdisk --force /dev/sda < partitions_cp.disk
 	mkfs.vfat -F 32 /dev/sda1
 	mkfs.ext4 -f /dev/sda2
+
+	udevadm settle
 
 	mount /dev/sda2 /mnt
 
@@ -26,13 +28,12 @@ if lsblk | grep sda ; then
 
 	git clone "https://github.com/AdrianPastrianTFG/Tfg.git" /tmp/my-repo
 
-	rm -f /mnt/etc/nixos/configuration.nix
+	mkdir -p /mnt/etc/nixos
 
 	if cp "/tmp/my-repo/VMsConf/$service/configuration.nix" /mnt/etc/nixos/ ; then
-		rm -rf /tmp/my-repo
-
 		nixos-generate-config --root /mnt
 		nixos-install --no-root-passwd
+		rm -rf /tmp/my-repo
 	else
 		echo "ERROR: The configuration.nix file could not be found" >&2
 		exit 1
