@@ -131,7 +131,13 @@ environment.sessionVariables = {
   services.cassandra.package = pkgs.cassandra_4;
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  networking.firewall = {
+	enable = true;
+  	interfaces."enp0s3" = {
+		allowedTCPPorts = [ 7000 7199 9042 ];
+  	};
+  };
+
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
