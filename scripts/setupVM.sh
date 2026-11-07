@@ -39,6 +39,7 @@ if lsblk | grep sda ; then
 	if cp "/tmp/my-repo/VMsConf/$service/configuration.nix" /mnt/etc/nixos/ ; then
 		nixos-install --no-root-passwd
 		rm -rf /tmp/my-repo
+		reboot
 	else
 		echo "ERROR: The configuration.nix file could not be found" >&2
 		exit 1
