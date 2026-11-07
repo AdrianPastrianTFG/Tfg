@@ -8,8 +8,6 @@
   networking.networkmanager.enable = true;
 
   # Interfaz dedicada a la red de instalación de VMs nuevas, con IP fija
-  # (un servidor DHCP no puede tener su propia IP por DHCP). AJUSTA el
-  # nombre de interfaz (comprueba con `ip a`) y el rango a tu red real.
   networking.interfaces.eth1.ipv4.addresses = [{
     address = "192.168.100.1";
     prefixLength = 24;
@@ -56,9 +54,7 @@
         "option:router,192.168.100.1"
         "option:dns-server,192.168.100.1"   # las VMs nuevas usan esta VM como DNS
       ];
-      # Sin "port = 0": así dnsmasq sí responde DNS (puerto 53), reenviando
-      # lo que no sabe a estos servidores. Sin esto, las VMs nuevas no
-      # pueden resolver github.com y el git clone de setupVM.sh falla.
+      # Sin "port = 0": así dnsmasq sí responde DNS (puerto 53), reenviando lo que no sabe a estos servidores
       server = [ "1.1.1.1" "8.8.8.8" ];
       domain-needed = true;
       bogus-priv = true;
@@ -67,8 +63,6 @@
   networking.firewall.allowedUDPPorts = [ 67 53 ];
   networking.firewall.allowedTCPPorts = [ 53 ];
 
-  # Da salida a Internet a las VMs de la red interna (eth1) a través del
-  # NAT de esta VM (eth0) — si no, setupVM.sh no puede hacer el git clone.
   networking.nat = {
     enable = true;
     externalInterface = "eth0";
