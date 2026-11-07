@@ -9,7 +9,13 @@ if [ "$#" -ne 1 ]; then
 fi
 
 if lsblk | grep sda ; then
-	sfdisk --force /dev/sda < partitions_cp.disk
+	if [ -d /tmp/*repo*/ ]; then
+		rm -rf /tmp/*repo*
+	fi
+
+	git clone "https://github.com/AdrianPastrianTFG/Tfg.git" /tmp/my-repo
+
+	sfdisk --force /dev/sda < /tmp/my-repo/VMsConf/Setup/partitions_cp.disk
 	udevadm settle
 
 	mkfs.vfat -F 32 /dev/sda1
@@ -25,11 +31,6 @@ if lsblk | grep sda ; then
 
 	service="$1"
 
-	if [ -d /tmp/*repo*/ ]; then
-		rm -rf /tmp/*repo*
-	fi
-
-	git clone "https://github.com/AdrianPastrianTFG/Tfg.git" /tmp/my-repo
 
 	mkdir -p /mnt/etc/nixos
 
