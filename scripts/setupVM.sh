@@ -44,4 +44,5 @@ if lsblk | grep sda ; then
 	fi
 else
 	echo "ERROR: Disks names are not correct"
+	exit 1
 fi

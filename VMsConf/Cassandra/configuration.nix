@@ -7,7 +7,8 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      	./hardware-configuration.nix
+	./cassandra-auth.nix
     ];
 
   # Use the GRUB 2 boot loader.
@@ -127,8 +128,21 @@ environment.sessionVariables = {
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-  services.cassandra.enable = true;
-  services.cassandra.package = pkgs.cassandra_4;
+
+  services.cassandra = {
+	enable = true;
+  	package = pkgs.cassandra_4;
+	
+	clusterName = "Cassandra-Cluster";
+	listenAddress = "192.168.100.1";
+	rpcAddress = "127.0.0.1";
+	seedAddresses = [ "cass1.lan" "cass2.lan" "cass3.lan" ];
+
+	extraConfig = {
+		num_tokens = 16;
+		endpoint_snitch = "SimpleSnitch";
+	};
+  };
 
   # Open ports in the firewall.
   networking.firewall = {
