@@ -37,7 +37,7 @@
     isNormalUser = true;
     description = "Adrian Pastrian Ramiro";
     extraGroups = [ "networkmanager" "wheel" ];
-    initialPassword = "cambiame";
+    initialPassword = "changeme";
     packages = with pkgs; [ wget git fastfetch ];
   };
 
