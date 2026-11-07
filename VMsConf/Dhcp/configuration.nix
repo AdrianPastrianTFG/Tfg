@@ -7,8 +7,9 @@
   networking.hostName = "repo";
   networking.networkmanager.enable = true;
 
-  # Interfaz dedicada a la red de instalación de VMs nuevas, con IP fija
-  networking.interfaces.eth1.ipv4.addresses = [{
+  # Interfaz dedicada a la red de instalación de VMs nuevas (Red interna
+  # de VirtualBox), con IP fija: enp0s8.
+  networking.interfaces.enp0s8.ipv4.addresses = [{
     address = "192.168.100.1";
     prefixLength = 24;
   }];
@@ -46,7 +47,7 @@
   services.dnsmasq = {
     enable = true;
     settings = {
-      interface = "eth1";
+      interface = "enp0s8";
       bind-interfaces = true;
       dhcp-authoritative = true;
       dhcp-range = [ "192.168.100.100,192.168.100.200,255.255.255.0,12h" ];
@@ -54,7 +55,16 @@
         "option:router,192.168.100.1"
         "option:dns-server,192.168.100.1"   # las VMs nuevas usan esta VM como DNS
       ];
-      # Sin "port = 0": así dnsmasq sí responde DNS (puerto 53), reenviando lo que no sabe a estos servidores
+      # Nombres por hostname: en vez de una lista fija de MACs aquí (que
+      # obligaría a nixos-rebuild cada vez que añades una VM), Ansible
+      # rellena este fichero sobre la marcha y recarga dnsmasq — sin
+      # tocar esta configuración para nada. Ver provision-new-vms.yml.
+      domain = "lan";
+      expand-hosts = true;
+      addn-hosts = "/var/lib/dnsmasq/hosts.lan";
+      # Sin "port = 0": así dnsmasq sí responde DNS (puerto 53), reenviando
+      # lo que no sabe a estos servidores. Sin esto, las VMs nuevas no
+      # pueden resolver github.com y el git clone de setupVM.sh falla.
       server = [ "1.1.1.1" "8.8.8.8" ];
       domain-needed = true;
       bogus-priv = true;
@@ -63,10 +73,18 @@
   networking.firewall.allowedUDPPorts = [ 67 53 ];
   networking.firewall.allowedTCPPorts = [ 53 ];
 
+  # El fichero tiene que existir ya (aunque vacío) antes de que arranque
+  # dnsmasq la primera vez; luego Ansible lo va rellenando.
+  systemd.tmpfiles.rules = [
+    "f /var/lib/dnsmasq/hosts.lan 0644 root root -"
+  ];
+
+  # Da salida a Internet a las VMs de la red interna (enp0s8) a través del
+  # NAT de esta VM (enp0s3) — si no, setupVM.sh no puede hacer el git clone.
   networking.nat = {
     enable = true;
-    externalInterface = "eth0";
-    internalInterfaces = [ "eth1" ];
+    externalInterface = "enp0s3";
+    internalInterfaces = [ "enp0s8" ];
   };
 
   # ---------- Ansible ----------
